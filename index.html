@@ -5,9 +5,174 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
+    <script src="/main.jsx"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css"
+      integrity="sha384-zB1R0rpPzHqg7Kpt0Aljp8JPLqbXI3bhnPWROx27a9N0Ll6ZP/+DiW/UqRcLbRjq"
+      crossorigin="anonymous"
+    />
+
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.16.2/build/styles/default.min.css"
+    />
     <style>
+      /* fallback */
+      @font-face {
+        font-family: "Material Icons";
+        font-style: normal;
+        font-weight: 400;
+        src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2)
+          format("woff2");
+      }
+
+      .material-icons,
+      squirrel-block-type {
+        font-family: "Material Icons";
+        font-weight: normal;
+        font-style: normal;
+        font-size: 24px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
+        -moz-font-feature-settings: "liga";
+        -moz-osx-font-smoothing: grayscale;
+      }
+      squirrel-block.has-wrapping {
+        padding-top: 0px;
+        padding-bottom: 0px;
+      }
+      squirrel-block-type {
+        position: absolute;
+        left: 0.6em;
+
+        font-size: 0.9em;
+
+        top: 0.8em;
+        color: #757575;
+      }
+      squirrel-block {
+        display: block;
+      }
+      p {
+        margin: 0px;
+      }
+      .block {
+        position: relative;
+        padding: 0.5em 2rem;
+      }
+      .block[plain="true"] {
+        background: #333;
+      }
+      .block[plain="true"].has-wrapping {
+        padding-top: 0em;
+        padding-bottom: 0em;
+      }
+      .block[plain="true"].has-wrapping > nutshell-mark {
+        font-size: 0.7em;
+      }
+      .image.block.content {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+      }
+      nutshell-mark {
+        color: #2196f3;
+        position: relative;
+        font-family: "Triplicate T4c";
+        font-size: 0.8em;
+      }
+      nutshell-block-mark {
+        color: white;
+        display: block;
+        border-radius: 4px;
+        background: #111;
+        position: relative;
+        font-family: "Triplicate T4c";
+        font-size: 0.8em;
+        padding: 0.2em;
+        min-height: calc(1em * 1.45);
+      }
+      nutshell-block-mark nutshell-mark {
+        font-size: 1em;
+      }
+      .popup {
+        position: absolute;
+        left: calc(50% - calc(0.5em + 1.5px));
+        bottom: 1.3em;
+        padding: 3px;
+        background: #111;
+        border-radius: 4px;
+        color: white;
+      }
+      .math.popup {
+        left: 0px;
+      }
+      .katex {
+        font-size: 1em;
+      }
+      .popup .katex,
+      .popup .katex-error {
+        white-space: pre;
+      }
+      img.emoji,
+      i.material-icons {
+        height: 1em;
+        width: 1em;
+        font-size: 1em;
+        display: inline;
+        margin: 0 0.05em 0 0.1em;
+        vertical-align: -0.2em;
+      }
+      i.material-icons {
+        margin: 0px;
+      }
+      .block {
+        font-family: "Equity Text B";
+        font-size: 21px;
+        line-height: 1.45;
+        color: #bbb;
+      }
+      .block[plain="true"] {
+        color: white;
+      }
+      #cursor {
+        height: 21px;
+      }
+      #cursor.heading_one {
+        height: 30px;
+      }
+      h1 {
+        margin: 0px;
+        font-size: 28px;
+        font-family: "Concourse T2";
+      }
+      .code squirrel-content,
+      .code-preview squirrel-content {
+        white-space: pre;
+        font-family: "Triplicate T4c";
+        overflow: auto;
+      }
+      .code squirrel-content nutshell-block-mark,
+      .code-preview squirrel-content nutshell-block-mark {
+        white-space: pre;
+        font-family: "Triplicate T4c";
+        overflow: auto;
+      }
+
+      code {
+        font-family: "Triplicate T4c";
+        font-size: 0.8em;
+        background: #111;
+        color: white;
+        border-radius: 4px;
+        padding: 0.1em 0.1em;
+      }
       body,
       html {
         margin: 0px;
@@ -21,19 +186,21 @@
         color: white;
       }
       p {
-        min-height: 1em;
+        min-height: calc(1em * 1.45);
       }
       #editor {
         max-width: 700px;
         margin-left: 100px;
-        padding: 2rem;
+        padding: 1rem 0rem;
+
         min-height: 500px;
-        background: #fff;
+        background: #212121;
         margin-top: 100px;
         word-break: break-word;
         word-wrap: break-word;
         cursor: text;
         white-space: pre-wrap;
+        margin-bottom: 100px;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
         -khtml-user-select: none;
@@ -56,7 +223,160 @@
       #editor .em {
         font-style: italic;
       }
+      #cursor {
+        z-index: 999;
+      }
     </style>
+    <!-- <style>
+      .cursor {
+        border-left: 2px solid #2196f3;
+        margin-right: -2px;
+        animation-duration: 1s;
+        animation-iteration-count: infinite;
+      }
+      .VARIABLE {
+        color: #757575;
+      }
+
+      kbd,
+      kbd.VARIABLE,
+      .VARIABLE.WITH_CURSOR,
+      .MATH.WITH_CURSOR,
+      .EMOJI.WITH_CURSOR {
+        color: #2196f3;
+      }
+
+      p,
+      blockquote,
+      h1,
+      h2,
+      pre {
+        font-size: 21px;
+        line-height: 1.58;
+        /*Poly variant font*/
+        font-family: "Equity Text B", sans-serif;
+        min-height: 1.58em;
+        overflow-wrap: break-word;
+        margin: 0px;
+        white-space: pre-wrap;
+        padding: 9px;
+        text-align: left;
+        width: 700px;
+        position: relative;
+      }
+      #faketextarea {
+        opacity: 0;
+        left: 0px;
+        top: 0px !important;
+        width: 1px;
+      }
+      kbd,
+      code,
+      pre {
+        font-size: 21px;
+        line-height: 1.58;
+        /* Code variant font*/
+        font-family: "Triplicate T4c", sans-serif;
+        min-height: 1.58em;
+      }
+      q::before,
+      q::after {
+        content: "";
+      }
+      blockquote {
+        padding-left: 9px;
+        margin-left: 9px;
+        margin: 9px;
+        width: 687px;
+        border-left: 4px solid #212121;
+      }
+      .tags {
+        text-align: center;
+      }
+      p::before,
+      pre::before {
+        content: "";
+      }
+      .tags .pill {
+        background: #2196f3;
+      }
+      blockquote:before {
+        content: "";
+      }
+      h1:before {
+        content: "";
+      }
+
+      .container {
+        position: relative;
+        display: block;
+        text-align: center;
+      }
+
+      .article-text-template {
+        max-width: 718px;
+        min-width: 718px;
+        display: inline-block;
+        text-align: left;
+        color: #212121;
+        padding-bottom: 100px;
+      }
+      .SMALLCAPS {
+        font-family: "Equity Caps B";
+        font-size: 1em;
+      }
+      code,
+      pre,
+      .RAWHTML.WITH_CURSOR {
+        font-family: "Triplicate T4c";
+        background: #212121;
+        color: #fff;
+        border-radius: 2px;
+        white-space: pre-wrap;
+      }
+
+      .link {
+        text-decoration: none;
+        color: #2196f3;
+      }
+
+      img.emoji,
+      img.EMOJI,
+      .material-icons {
+        height: 1em;
+        width: 1em;
+        vertical-align: -0.1em;
+      }
+      .img {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        background: #ededed;
+      }
+      .img:before {
+        content: " ";
+        display: block;
+        height: 500px;
+        position: absolute;
+        object-fit: cover;
+        width: calc(100% - 18px);
+        background: #ededed;
+      }
+
+      .error {
+        color: red;
+      }
+      h1 {
+        font-size: 1.4em;
+      }
+      h2 {
+        font-size: 1.2em;
+      }
+
+      .ctrl_heading {
+        font-size: 1.4em;
+      }
+    </style> -->
   </head>
   <body>
     <div id="editor"></div>
